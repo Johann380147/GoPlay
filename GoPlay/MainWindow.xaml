@@ -1,0 +1,251 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GoPlay"
+        xmlns:Controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit" x:Class="GoPlay.MainWindow"
+        mc:Ignorable="d"
+        Title="GoPlay"
+    Height="700" 
+    Width="1100" 
+    WindowStartupLocation="CenterScreen" 
+    HorizontalAlignment="Center" 
+    Icon="GoPlay.ico" 
+    PreviewKeyUp="Window_KeyUp" 
+    PreviewMouseLeftButtonUp="Window_PreviewMouseLeftButtonUp"
+    PreviewMouseMove="Window_PreviewMouseMove" 
+    PreviewMouseWheel="Volume_MouseWheel">
+
+    <Window.Resources>
+
+        <Style x:Key="SliderRepeatButton" TargetType="RepeatButton">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="IsTabStop" Value="false" />
+            <Setter Property="Focusable" Value="false" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Black" Height="7"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border SnapsToDevicePixels="True" Background="MediumBlue" Height="7"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SliderThumb" TargetType="Thumb">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Ellipse Height="12" Width="12" Stroke="CadetBlue" Fill="RoyalBlue"></Ellipse>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="Slider"  TargetType="Slider">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Track Grid.Row="1" x:Name="PART_Track"   >
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource SliderRepeatButton1}"  Command="Slider.DecreaseLarge" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Style="{StaticResource SliderThumb}"  />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource SliderRepeatButton}" Command="Slider.IncreaseLarge" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+            </Grid>
+        </ControlTemplate>
+
+        <Style x:Key="Horizontal_Slider" TargetType="Slider">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="MinHeight" Value="21" />
+                    <Setter Property="MinWidth" Value="104" />
+                    <Setter Property="Template" Value="{StaticResource Slider}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+
+    <Grid x:Name="MainGrid" 
+          PreviewMouseMove="MainGrid_PreviewMouseMove" 
+          Margin="0,0,0,0" 
+          Background="Black"
+          SizeChanged="MainGrid_SizeChanged">
+
+        <MediaElement x:Name="MediaPlayer"
+                      Margin="0,0,0,0"
+                      LoadedBehavior="Manual"
+                      UnloadedBehavior="Manual"
+                      Stretch="UniformToFill" 
+                      MediaOpened="MediaPlayer_MediaOpened"
+                      MediaEnded="MediaPlayer_MediaEnded"
+                      MouseLeftButtonUp="MediaPlayer_MouseLeftButtonUp"/>
+
+        <Controls:DvdPlayerElement x:Name="DvdPlayer"
+                                   Margin="0,0,0,0"
+                                   Visibility="Visible" 
+                                   LoadedBehavior="Manual" 
+                                   UnloadedBehavior="Manual" 
+                                   Stretch="UniformToFill" Volume="0.5"/>
+
+        <Controls:MediaUriElement x:Name="UriPlayer"
+                                  Margin="0,0,0,0" 
+                                  Visibility="Collapsed" 
+                                  LoadedBehavior="Manual" 
+                                  UnloadedBehavior="Manual" 
+                                  Stretch="UniformToFill" Volume="0.5"/>
+
+        <Grid x:Name="ButtonGrid" 
+              Margin="10,0,10,5" 
+              Visibility="Visible" 
+              IsVisibleChanged="ButtonGrid_IsVisibleChanged"
+              MouseLeave="ButtonGrid_MouseLeave" 
+              Background="#4C646464"
+              Height="124" 
+              VerticalAlignment="Bottom">
+
+            <Border x:Name="PlayPauseBorder"
+                    BorderThickness="1" 
+                    HorizontalAlignment="Left" 
+                    Margin="448,35,0,10" 
+                    Width="85"
+                    CornerRadius="50">
+
+                <Image x:Name="PlayPause" 
+                       MouseUp="PlayPause_MouseUp" 
+                       Source="pack://application:,,,/Resources/play.png"/>
+
+            </Border>
+            <Border x:Name="StopBorder" 
+                    BorderThickness="1"
+                    HorizontalAlignment="Left" 
+                    Margin="598,35,0,10" 
+                    Width="85" 
+                    CornerRadius="50">
+
+                <Image x:Name="Stop" 
+                       MouseUp="Stop_MouseUp" 
+                       Source="pack://application:,,,/Resources/stop.png"/>
+
+            </Border>
+            <Border x:Name="OpenFileBorder" 
+                    BorderThickness="1" 
+                    HorizontalAlignment="Left"
+                    Margin="298,35,0,10" 
+                    Width="85"
+                    CornerRadius="50">
+
+                <Image x:Name="OpenFile"
+                       MouseUp="OpenFile_MouseUp"
+                       Source="pack://application:,,,/Resources/open.png"/>
+
+            </Border>
+
+            <Label x:Name="VideoDuration"
+                   Content="00:00:00 / 00:00:00" 
+                   Margin="16,35,0,63" 
+                   Background="{x:Null}" 
+                   Foreground="#FFC8C8C8" 
+                   HorizontalAlignment="Left" 
+                   Width="201"/>
+
+            <ProgressBar x:Name="VideoProgess"
+                         HorizontalAlignment="Left"
+                         Height="10" Margin="20,20,0,0" 
+                         VerticalAlignment="Top" 
+                         Width="1043"
+                         Foreground="#FF2222A6" 
+                         Background="#CCE6E6E6" 
+                         BorderBrush="#CCBCBCBC" 
+                         Cursor="Hand" 
+                         MouseLeftButtonDown="VideoProgess_MouseDown"
+                         MouseMove="VideoProgess_MouseMove"/>
+
+            <Border x:Name="SoundBorder" 
+                    BorderBrush="Black" 
+                    BorderThickness="0" 
+                    Margin="844,64,0,20" HorizontalAlignment="Left" Width="40">
+
+                <Image x:Name="Sound" 
+                       Source="pack://application:,,,/Resources/sound.png"
+                       MouseLeftButtonUp="Sound_MouseLeftButtonUp"
+                       Height="40" 
+                       VerticalAlignment="Bottom" 
+                       HorizontalAlignment="Right"
+                       Width="40"/>
+
+            </Border>
+            <Border x:Name="LoopBorder"
+                    BorderThickness="0" 
+                    Margin="20,66,0,26"
+                    HorizontalAlignment="Left"
+                    Width="32" >
+
+                <Image x:Name="Loop"
+                       Source="Resources/loopOff.png" 
+                       MouseLeftButtonUp="Loop_MouseLeftButtonUp"/>
+            </Border>
+
+            <Border x:Name="UriBorder"
+                    BorderThickness="0" 
+                    Margin="65,66,0,26"
+                    HorizontalAlignment="Left"
+                    Width="32" >
+
+                <Image x:Name="UriLink"
+                       Source="Resources/weblink.png" 
+                       MouseLeftButtonUp="UriLink_MouseLeftButtonUp"/>
+            </Border>
+            <Slider x:Name="Volume" Style="{StaticResource Horizontal_Slider}"  Value="50" Margin="902,72,0,31" Maximum="100" LargeChange="10" SmallChange="2"
+                    ValueChanged="Volume_ValueChanged" 
+                    MouseWheel="Volume_MouseWheel" HorizontalAlignment="Left" Width="122"/>
+        </Grid>
+        <Image x:Name="AppIcon" 
+               Margin="504,282,0,0" 
+               Source="GoPlay.ico" 
+               Visibility="Visible" 
+               Width="100"
+               Height="100"
+               VerticalAlignment="Top" 
+               HorizontalAlignment="Left"
+               MouseLeftButtonUp="MediaPlayer_MouseLeftButtonUp" />
+
+        <Label x:Name="VolumeLabel" 
+               Content="Volume: 50%" 
+               HorizontalAlignment="Right" 
+               Margin="0,0,9,0" 
+               VerticalAlignment="Bottom" 
+               Visibility="Collapsed" 
+               Foreground="#FF969696"/>
+        <TextBlock x:Name="TextBlock" HorizontalAlignment="Left" Margin="388,186,0,0" TextWrapping="Wrap" Text="Now Playing:" VerticalAlignment="Top" Foreground="#FF597CA6" FontSize="26.667" Visibility="Collapsed" IsVisibleChanged="TextBlock_IsVisibleChanged"/>
+        <TextBlock x:Name="NowPlaying" HorizontalAlignment="Left" Margin="388,186,0,0" TextWrapping="Wrap" Text="Song" VerticalAlignment="Top" Foreground="#FFBDB8B8" FontSize="26.667" Visibility="Collapsed"/>
+
+    </Grid>
+</Window>
